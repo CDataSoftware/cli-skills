@@ -1,2 +1,2 @@
 # skills
-Official CData Skills for use with CData drivers and the Driver CLI
+Official CData Skills for use with CData Connect AI and CData Driver CLI.
