@@ -81,11 +81,18 @@ For popular sources, CData drivers ship source-specific instructions (connection
 cdatacli drivers skill <Driver>
 ```
 
-This prints a ready-to-use YAML skill frontmatter prefix (`name: cdata-<source>` plus a description) followed by the driver's bundled instructions (`resources/instructions.md` inside the jar). Redirect to `~/skills/cdata-<source>/SKILL.md` and load the new skill for future work on that source:
+This prints a ready-to-use YAML skill frontmatter prefix (`name: cdata-<source>` plus a description) followed by the driver's bundled instructions (`resources/instructions.md` inside the jar).
+
+Save the output as a `SKILL.md` in **whichever directory the user's AI coding tool loads skills (or rules/instructions) from** — the right location depends on the tool, so don't assume a fixed path. For example:
+
+- **Claude Code:** `~/.claude/skills/cdata-<source>/SKILL.md` (user-level) or `.claude/skills/cdata-<source>/SKILL.md` (project-level)
+- **Other agents** (Cursor, GitHub Copilot, Gemini CLI, Codex, etc.): use that tool's own skills/rules/instructions directory and file convention
+
+If you're not sure where the current tool loads skills from, ask the user before writing the file. Then load the new skill for future work on that source. Example (replace `<skills-dir>` with the correct location for your tool):
 
 ```bash
-mkdir -p ~/skills/cdata-<source>
-cdatacli drivers skill <Driver> > ~/skills/cdata-<source>/SKILL.md
+mkdir -p <skills-dir>/cdata-<source>
+cdatacli drivers skill <Driver> > <skills-dir>/cdata-<source>/SKILL.md
 ```
 
 If the driver has no checked-in instructions, the command returns `No instructions available for <driver>` — in that case, proceed with the generic workflow below.
@@ -110,7 +117,7 @@ If the driver has no checked-in instructions, the command returns `No instructio
 
 Confirm the **source** and **goal** (what to query or accomplish) before proceeding.
 
-If a source-specific SKILL is already installed at `~/skills/cdata-<source>/`, invoke it. Otherwise try `cdatacli drivers skill <Driver>` — if it returns content, save it as a new skill and invoke it. If it returns `No instructions available for <driver>`, continue with the generic workflow.
+If a source-specific SKILL is already installed in the AI tool's skills directory (`cdata-<source>`), invoke it. Otherwise try `cdatacli drivers skill <Driver>` — if it returns content, save it as a new skill in the location appropriate for the user's AI tool (see Source-Specific Skills above) and invoke it. If it returns `No instructions available for <driver>`, continue with the generic workflow.
 
 ---
 
