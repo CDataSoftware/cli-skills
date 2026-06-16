@@ -81,9 +81,9 @@ For popular sources, CData drivers ship source-specific instructions (connection
 cdatacli drivers skill <Driver>
 ```
 
-This prints a ready-to-use YAML skill frontmatter prefix (`name: cdata-<source>` plus a description) followed by the driver's bundled instructions (`resources/instructions.md` inside the jar).
+This prints a ready-to-use YAML skill frontmatter prefix (`name: cdata-<source>` plus a description) followed by the driver's source-specific instructions.
 
-Save the output as a `SKILL.md` in **whichever directory the user's AI coding tool loads skills (or rules/instructions) from** — the right location depends on the tool, so don't assume a fixed path. For example:
+Save the output as a `SKILL.md` in **whichever directory the user's AI coding tool loads skills (or rules/instructions) from** — the right location depends on the tool and on the intended scope: **user-level** (available across all of the user's projects) or **project-level** (committed with a single project). Don't assume a fixed path. For example:
 
 - **Claude Code:** `~/.claude/skills/cdata-<source>/SKILL.md` (user-level) or `.claude/skills/cdata-<source>/SKILL.md` (project-level)
 - **Other agents** (Cursor, GitHub Copilot, Gemini CLI, Codex, etc.): use that tool's own skills/rules/instructions directory and file convention
