@@ -1,5 +1,5 @@
 ---
-name: cdata-driver-cli
+name: cdata-cli
 description: "Use when the user wants to connect to, query, or explore a data source through a CData driver via the command line. This includes: creating or testing a connection to an enterprise system (Salesforce, NetSuite, Snowflake, SQL Server, Jira, etc.); running SQL queries against connected data; exploring schema (listing tables, columns, or stored procedures); executing source-specific stored procedures; and downloading, installing, or activating CData drivers. Acts as the prerequisite foundation for all driver-level cdata- skills (cdata-salesforce, cdata-airtable, etc.) that add source-specific guidance."
 license: MIT
 metadata:
@@ -7,7 +7,7 @@ metadata:
   version: "1.0"
 ---
 
-# SKILL: CData Driver CLI
+# SKILL: CData CLI
 
 ## Data Model
 
