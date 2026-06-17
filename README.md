@@ -24,10 +24,8 @@ npx skills add CDataSoftware/cli-skills
 
 The `cdata-cli` skill drives the `cdatacli` executable — a Java CLI (requires Java 17+) for CData JDBC drivers. After installing the CLI, `cdatacli` is on `PATH` and discovers drivers from `./` or `./lib/` relative to the executable.
 
-> Install commands are tentative and will be finalized for the CLI release. Separate installers are planned for Windows, macOS, and Linux.
-
-- Windows (PowerShell): `iwr https://cdn.cdata.com/cli/install.ps1 | iex`
-- macOS: `curl -fsSL https://cdn.cdata.com/cli/install-macos.sh | bash`
-- Linux: `curl -fsSL https://cdn.cdata.com/cli/install-linux.sh | bash`
+- Windows (PowerShell): `irm https://downloads.cdata.com/cdatabuilds/builds/free/cdatacli/install-cdatacli-windows.ps1 | iex`
+- macOS: `curl -fsSL https://downloads.cdata.com/cdatabuilds/builds/free/cdatacli/install-cdatacli-macos.sh | bash`
+- Linux: `curl -fsSL https://downloads.cdata.com/cdatabuilds/builds/free/cdatacli/install-cdatacli-linux.sh | bash`
 
 Driver jars can be fetched via `cdatacli drivers download` from the CData driver catalog.
