@@ -73,7 +73,7 @@ Every subcommand supports `--help` — returns purpose, required args, optional 
 
 ## Source-Specific Skills
 
-For popular sources, CData drivers ship source-specific instructions (connection patterns, schema notes, query examples). Generate a ready-to-use skill with:
+For popular sources, CData drivers ship source-specific instructions (connection patterns, schema notes, query examples). The driver must be installed first — this command reads the instructions bundled in the driver jar. Once it's installed, generate a ready-to-use skill with:
 
 ```bash
 cdatacli drivers skill <Driver>
@@ -133,7 +133,7 @@ The CLI requires Java 17+.
 
 Confirm the **source** and **goal** (what to query or accomplish) before proceeding.
 
-If a source-specific SKILL is already installed in the AI tool's skills directory (`cdata-<source>`), invoke it. Otherwise try `cdatacli drivers skill <Driver>` — if it returns content, save it as a new skill in the location appropriate for the user's AI tool (see Source-Specific Skills above) and invoke it. If it returns `No instructions available for <driver>`, continue with the generic workflow.
+If a source-specific SKILL is already installed in the AI tool's skills directory (`cdata-<source>`), invoke it. Otherwise, **don't generate one yet** — `cdatacli drivers skill <Driver>` reads the instructions bundled in the driver jar, so it only works once the driver is installed. Wait until you've confirmed the driver is installed (Step 3), then run `cdatacli drivers skill <Driver>`: if it returns content, save it as a new skill in the location appropriate for the user's AI tool (see Source-Specific Skills above) and invoke it; if it returns `No instructions available for <driver>`, continue with the generic workflow.
 
 ---
 
@@ -185,7 +185,7 @@ cdatacli drivers connectionprops <Driver>          # basic properties (default)
 cdatacli drivers connectionprops <Driver> --full   # advanced properties instead
 ```
 
-By default this returns the **basic** properties (`jdbcJson.basic`) — the set most connections need. Use `--full` only when the user needs an advanced property not in the basic set (`--full` returns `jdbcJson.advanced`, a flat list of every property). Each property reports:
+By default this returns the **basic** properties — the set most connections need, and what you should prompt from. Use `--full` when the user needs an advanced property that isn't in the basic set — it returns every property, 100+ for some drivers. When you do, surface only the specific advanced property the user needs rather than pasting the entire list back to them. Each property reports:
 
 - `name` — the property to put in the connection string (strip spaces, e.g. `Auth Scheme` → `AuthScheme`)
 - `display` — required-ness, e.g. `RequiredBasic` (must provide) vs `UnrequiredBasic` (optional)
@@ -203,13 +203,16 @@ Key properties across all sources:
 - `OAuthClientId` / `OAuthClientSecret` — for custom OAuth apps
 - `OAuthSettingsLocation` — where OAuth tokens are cached
 
-**Use only the properties the user provides or that `connectionprops` marks as required.** Do not add, infer, or carry over any property the user didn't ask for — including values from a previously created connection.
+**Don't silently add or carry over properties.** Every property in the connection string must trace to the user's explicit choice — the required properties for their chosen auth scheme, plus any optional properties they accept when you offer them (see below). Never inject a property the user didn't choose, and never carry values over from a previously created connection (e.g. silently appending `GetColumnsMetadata=OnUse`). This does **not** mean skip optional properties — you still must offer them.
 
-**Offer the choices — don't assume.** After inspecting the properties, present the user with the available **authentication schemes** (the `AuthScheme` `enum` values) and the relevant **optional properties** for this source, and ask which they want to use before building the connection string. For example:
+**Offer the choices — don't assume.** Before building the connection string, walk the user through two questions:
 
-> Which authentication method do you want to use for `<Driver>`? Options: `OAuth`, `Basic`, `OAuthClient`, … And do you want to set any optional properties (e.g. `FolderId`, `FolderName`, `ReadOnly`)?
+1. **Authentication:** Present the available **authentication schemes** (the `AuthScheme` values) and ask which one they want, then collect the properties that scheme requires.
+2. **Optional properties:** You **must** ask whether they want to set any optional connection properties — do not skip this and do not silently build a minimal string. **Recommend the relevant optional properties** from the **basic** set, briefly describing each (use its `description`), and let the user choose. Keep recommendations to the handful of relevant basic options; only pull an advanced property with `--full` if the user names one that isn't in the basic set.
 
-Then ask only for the properties the chosen scheme requires (per its `hierarchyRules`).
+Build the connection string from `AuthScheme` + the required properties + whatever optional properties the user chooses. For example:
+
+> You're connecting to `<Driver>` via `OAuth`. Optional properties you can set for this source include `<PropA>` (what it does) and `<PropB>` (what it does). Would you like to set any of these, or use the defaults?
 
 ---
 
@@ -244,8 +247,6 @@ Common patterns:
 | Basic (user/pass) | `AuthScheme=Basic;User=you@example.com;Password=pass` |
 | API Token | `User=you@example.com;APIToken=yourtoken` |
 | Read-only | Append `ReadOnly=true` to any connection string |
-
-The first query after creating an OAuth connection opens a browser for authentication. Subsequent queries auto-refresh tokens. If you've previously set up a connection for the same source, you won't need to log in and approve the app again — the new connection references the same default `OAuthSettingsLocation`, so the cached tokens are reused.
 
 ```bash
 cdatacli connection list
