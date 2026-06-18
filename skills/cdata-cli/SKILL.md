@@ -237,7 +237,7 @@ Common patterns:
 | API Token | `User=you@example.com;APIToken=yourtoken` |
 | Read-only | Append `ReadOnly=true` to any connection string |
 
-The first query after creating an OAuth connection opens a browser for authentication. Subsequent queries auto-refresh tokens.
+The first query after creating an OAuth connection opens a browser for authentication. Subsequent queries auto-refresh tokens. If you've previously set up a connection for the same source, you won't need to log in and approve the app again — the new connection references the same default `OAuthSettingsLocation`, so the cached tokens are reused.
 
 ```bash
 cdatacli connection list
