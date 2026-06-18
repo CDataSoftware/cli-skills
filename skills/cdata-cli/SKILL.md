@@ -111,7 +111,25 @@ If the driver has no checked-in instructions, the command returns `No instructio
 
 ## Recommended Workflow
 
-### Step 1: Understand the Goal
+### Step 1: Ensure the CLI is Installed
+
+Confirm the CLI is available before anything else:
+
+```bash
+cdatacli --version
+```
+
+If that fails (command not found), install it and then re-check `cdatacli --version`:
+
+- Windows (PowerShell): `irm https://downloads.cdata.com/cdatabuilds/builds/free/cdatacli/install-cdatacli-windows.ps1 | iex`
+- macOS: `curl -fsSL https://downloads.cdata.com/cdatabuilds/builds/free/cdatacli/install-cdatacli-macos.sh | bash`
+- Linux: `curl -fsSL https://downloads.cdata.com/cdatabuilds/builds/free/cdatacli/install-cdatacli-linux.sh | bash`
+
+The CLI requires Java 17+.
+
+---
+
+### Step 2: Understand the Goal
 
 Confirm the **source** and **goal** (what to query or accomplish) before proceeding.
 
@@ -119,13 +137,13 @@ If a source-specific SKILL is already installed in the AI tool's skills director
 
 ---
 
-### Step 2: Verify Driver is Available and Activated
+### Step 3: Verify Driver is Available and Activated
 
 ```bash
 cdatacli drivers list
 ```
 
-If the driver appears with `"activated": true`, skip to Step 3. If the driver is missing, download it from the CData driver catalog:
+If the driver appears with `"activated": true`, skip to Step 4. If the driver is missing, download it from the CData driver catalog:
 
 ```bash
 cdatacli drivers search --driver <source>          # find the artifactId
@@ -156,7 +174,7 @@ cdatacli drivers activate <Driver> --name "John Doe" --email "you@example.com" -
 
 ---
 
-### Step 3: Check Connection Properties
+### Step 4: Check Connection Properties
 
 If a saved connection already exists (`connection list`), confirm with the user they would like to use it. Otherwise, inspect the driver's connection properties to determine what credentials to ask for:
 
@@ -187,7 +205,7 @@ Key properties across all sources:
 
 ---
 
-### Step 4: Create a Saved Connection
+### Step 5: Create a Saved Connection
 
 > **⚠️ Credential notice — show this to the user before running `connection create`:**
 >
@@ -236,7 +254,7 @@ Connections are saved as encrypted `.conn` files (AES-256):
 
 ---
 
-### Step 5: Discover Schema
+### Step 6: Discover Schema
 
 ```bash
 cdatacli metadata tables --connection <name>
@@ -254,7 +272,7 @@ Name patterns use `%` as a wildcard and are **case-insensitive**. A bare value i
 
 ---
 
-### Step 6: Execute Queries
+### Step 7: Execute Queries
 
 Use only column names confirmed by previous steps. Build incrementally.
 
@@ -312,7 +330,7 @@ cdatacli query sql --connection <name> --sql "EXEC ProcedureName Param1='value1'
 
 ---
 
-### Step 7: Generate Application Code
+### Step 8: Generate Application Code
 
 If the user's goal includes generating application code, use the validated SQL, driver path (from `drivers list`), and connection string to generate standalone code.
 
