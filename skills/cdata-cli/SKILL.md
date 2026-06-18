@@ -165,7 +165,9 @@ cdatacli drivers download --url <jar-url>          # alternative: direct URL
 >
 > Once the driver is activated, the license is saved alongside the jar — `drivers list` will show `"activated": true` and no further activation is needed in the AI session.
 
-The driver is a positional argument (e.g. `Salesforce`). `--name` and `--email` are the registrant's name and email — the individual registering the license. Use `--trial` for a 30-day trial. For a purchased key, follow the notice above.
+**Ask before activating — don't default to a trial.** First ask the user whether they have a purchased license key or want a 30-day trial. Only run `--trial` if they confirm they don't have a key (or explicitly choose the trial); if they have a key, follow the license-key notice above rather than activating in this session.
+
+The driver is a positional argument (e.g. `Salesforce`). `--name` and `--email` are the registrant's name and email — the individual registering the license. `--trial` requests a 30-day trial; `--key` activates a purchased license.
 
 ```bash
 cdatacli drivers activate <Driver> --name "John Doe" --email "you@example.com" --trial
@@ -202,6 +204,12 @@ Key properties across all sources:
 - `OAuthSettingsLocation` — where OAuth tokens are cached
 
 **Use only the properties the user provides or that `connectionprops` marks as required.** Do not add, infer, or carry over any property the user didn't ask for — including values from a previously created connection.
+
+**Offer the choices — don't assume.** After inspecting the properties, present the user with the available **authentication schemes** (the `AuthScheme` `enum` values) and the relevant **optional properties** for this source, and ask which they want to use before building the connection string. For example:
+
+> Which authentication method do you want to use for `<Driver>`? Options: `OAuth`, `Basic`, `OAuthClient`, … And do you want to set any optional properties (e.g. `FolderId`, `FolderName`, `ReadOnly`)?
+
+Then ask only for the properties the chosen scheme requires (per its `hierarchyRules`).
 
 ---
 
