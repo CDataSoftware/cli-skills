@@ -185,15 +185,9 @@ cdatacli drivers connectionprops <Driver>          # basic properties (default)
 cdatacli drivers connectionprops <Driver> --full   # advanced properties instead
 ```
 
-By default this returns the **basic** properties — the set most connections need, and what you should prompt from. Use `--full` when the user needs an advanced property that isn't in the basic set — it returns every property, 100+ for some drivers. When you do, surface only the specific advanced property the user needs rather than pasting the entire list back to them. Each property reports:
+By default `connectionprops` returns the **basic** properties — the set most connections need. Have the user confirm the connection string before building the connection. If they need advanced properties not in the basic set, add `--full` to the `connectionprops` command.
 
-- `name` — the property to put in the connection string (strip spaces, e.g. `Auth Scheme` → `AuthScheme`)
-- `display` — required-ness, e.g. `RequiredBasic` (must provide) vs `UnrequiredBasic` (optional)
-- `type` — expected value type
-- `description` — what it does
-- `default` — value used if you omit the property (shown only when it has one)
-- `enum` — allowed values, when the property accepts a fixed set
-- `hierarchyRules` — conditional dependencies (see below)
+Don't carry connection settings over from a previous connection or session into a new connection without acknowledging it to the user.
 
 **Hierarchy rules** describe how properties depend on each other. A property's `hierarchyRules` is keyed by that property's possible values, and each key lists the properties that become relevant for that choice. For example, Salesforce's `AuthScheme` has rules for `Basic`, `OAuth`, `OAuthClient`, etc.: choosing `AuthScheme=Basic` surfaces `User` and `Password` (both `RequiredBasic`) plus `SecurityToken` (`UnrequiredBasic`). Use these rules to ask the user only for the properties that the chosen auth scheme actually requires.
 
@@ -202,17 +196,6 @@ Key properties across all sources:
 - `InitiateOAuth` — OFF, GETANDREFRESH, REFRESH
 - `OAuthClientId` / `OAuthClientSecret` — for custom OAuth apps
 - `OAuthSettingsLocation` — where OAuth tokens are cached
-
-**Don't silently add or carry over properties.** Every property in the connection string must trace to the user's explicit choice — the required properties for their chosen auth scheme, plus any optional properties they accept when you offer them (see below). Never inject a property the user didn't choose, and never carry values over from a previously created connection (e.g. silently appending `GetColumnsMetadata=OnUse`). This does **not** mean skip optional properties — you still must offer them.
-
-**Offer the choices — don't assume.** Before building the connection string, walk the user through two questions:
-
-1. **Authentication:** Present the available **authentication schemes** (the `AuthScheme` values) and ask which one they want, then collect the properties that scheme requires.
-2. **Optional properties:** You **must** ask whether they want to set any optional connection properties — do not skip this and do not silently build a minimal string. **Recommend the relevant optional properties** from the **basic** set, briefly describing each (use its `description`), and let the user choose. Keep recommendations to the handful of relevant basic options; only pull an advanced property with `--full` if the user names one that isn't in the basic set.
-
-Build the connection string from `AuthScheme` + the required properties + whatever optional properties the user chooses. For example:
-
-> You're connecting to `<Driver>` via `OAuth`. Optional properties you can set for this source include `<PropA>` (what it does) and `<PropB>` (what it does). Would you like to set any of these, or use the defaults?
 
 ---
 
