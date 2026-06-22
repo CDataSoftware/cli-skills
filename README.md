@@ -1,7 +1,5 @@
 # cli-skills
 
-> **⚠️ Important:** This repository is under development — contents are subject to change.
-
 CData CLI Skills are agent skills for working with [CData CLI](https://www.cdata.com/solutions/cli/) from AI coding tools. CData CLI enables AI coding agents like Claude Code, Cursor, GitHub Copilot, Google Gemini CLI or OpenAI Codex to access your business data via CData Drivers. Salesforce, NetSuite, Jira, SAP, QuickBooks and hundreds of SaaS or databases can be accessed from your AI terminal, allowing you to develop data-connected applications or simply run data-connected agents on your terminal.
 
 The Skills follow the [vercel-labs/skills](https://github.com/vercel-labs/skills) standard — each skill is a directory under `skills/` containing a `SKILL.md` with YAML frontmatter (`name`, `description`, `license`) and instructions for the agent.
