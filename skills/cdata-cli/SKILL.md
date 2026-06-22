@@ -73,7 +73,7 @@ Every subcommand supports `--help` — returns purpose, required args, optional 
 
 ## Source-Specific Skills
 
-For popular sources, CData drivers ship source-specific instructions (connection patterns, schema notes, query examples). Generate a ready-to-use skill with:
+For popular sources, CData drivers ship source-specific instructions (connection patterns, schema notes, query examples). The driver must be installed first — this command reads the instructions bundled in the driver jar. Once it's installed, generate a ready-to-use skill with:
 
 ```bash
 cdatacli drivers skill <Driver>
@@ -133,7 +133,7 @@ The CLI requires Java 17+.
 
 Confirm the **source** and **goal** (what to query or accomplish) before proceeding.
 
-If a source-specific SKILL is already installed in the AI tool's skills directory (`cdata-<source>`), invoke it. Otherwise try `cdatacli drivers skill <Driver>` — if it returns content, save it as a new skill in the location appropriate for the user's AI tool (see Source-Specific Skills above) and invoke it. If it returns `No instructions available for <driver>`, continue with the generic workflow.
+If a source-specific SKILL is already installed in the AI tool's skills directory (`cdata-<source>`), invoke it. Otherwise, **don't generate one yet** — `cdatacli drivers skill <Driver>` reads the instructions bundled in the driver jar, so it only works once the driver is installed. Wait until you've confirmed the driver is installed (Step 3), then run `cdatacli drivers skill <Driver>`: if it returns content, save it as a new skill in the location appropriate for the user's AI tool (see Source-Specific Skills above) and invoke it; if it returns `No instructions available for <driver>`, continue with the generic workflow.
 
 ---
 
@@ -165,7 +165,9 @@ cdatacli drivers download --url <jar-url>          # alternative: direct URL
 >
 > Once the driver is activated, the license is saved alongside the jar — `drivers list` will show `"activated": true` and no further activation is needed in the AI session.
 
-The driver is a positional argument (e.g. `Salesforce`). `--name` and `--email` are the registrant's name and email — the individual registering the license. Use `--trial` for a 30-day trial. For a purchased key, follow the notice above.
+**Ask before activating — don't default to a trial.** First ask the user whether they have a purchased license key or want a 30-day trial. Only run `--trial` if they confirm they don't have a key (or explicitly choose the trial); if they have a key, follow the license-key notice above rather than activating in this session.
+
+The driver is a positional argument (e.g. `Salesforce`). `--name` and `--email` are the registrant's name and email — the individual registering the license. `--trial` requests a 30-day trial; `--key` activates a purchased license.
 
 ```bash
 cdatacli drivers activate <Driver> --name "John Doe" --email "you@example.com" --trial
@@ -183,15 +185,9 @@ cdatacli drivers connectionprops <Driver>          # basic properties (default)
 cdatacli drivers connectionprops <Driver> --full   # advanced properties instead
 ```
 
-By default this returns the **basic** properties (`jdbcJson.basic`) — the set most connections need. Use `--full` only when the user needs an advanced property not in the basic set (`--full` returns `jdbcJson.advanced`, a flat list of every property). Each property reports:
+By default `connectionprops` returns the **basic** properties — the set most connections need. Have the user confirm the connection string before building the connection. If they need advanced properties not in the basic set, add `--full` to the `connectionprops` command.
 
-- `name` — the property to put in the connection string (strip spaces, e.g. `Auth Scheme` → `AuthScheme`)
-- `display` — required-ness, e.g. `RequiredBasic` (must provide) vs `UnrequiredBasic` (optional)
-- `type` — expected value type
-- `description` — what it does
-- `default` — value used if you omit the property (shown only when it has one)
-- `enum` — allowed values, when the property accepts a fixed set
-- `hierarchyRules` — conditional dependencies (see below)
+Don't carry connection settings over from a previous connection or session into a new connection without acknowledging it to the user.
 
 **Hierarchy rules** describe how properties depend on each other. A property's `hierarchyRules` is keyed by that property's possible values, and each key lists the properties that become relevant for that choice. For example, Salesforce's `AuthScheme` has rules for `Basic`, `OAuth`, `OAuthClient`, etc.: choosing `AuthScheme=Basic` surfaces `User` and `Password` (both `RequiredBasic`) plus `SecurityToken` (`UnrequiredBasic`). Use these rules to ask the user only for the properties that the chosen auth scheme actually requires.
 
@@ -200,8 +196,6 @@ Key properties across all sources:
 - `InitiateOAuth` — OFF, GETANDREFRESH, REFRESH
 - `OAuthClientId` / `OAuthClientSecret` — for custom OAuth apps
 - `OAuthSettingsLocation` — where OAuth tokens are cached
-
-**Use only the properties the user provides or that `connectionprops` marks as required.** Do not add, infer, or carry over any property the user didn't ask for — including values from a previously created connection.
 
 ---
 
@@ -236,8 +230,6 @@ Common patterns:
 | Basic (user/pass) | `AuthScheme=Basic;User=you@example.com;Password=pass` |
 | API Token | `User=you@example.com;APIToken=yourtoken` |
 | Read-only | Append `ReadOnly=true` to any connection string |
-
-The first query after creating an OAuth connection opens a browser for authentication. Subsequent queries auto-refresh tokens.
 
 ```bash
 cdatacli connection list
