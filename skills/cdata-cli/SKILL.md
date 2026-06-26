@@ -64,7 +64,7 @@ If `cdatacli --version` is missing, install:
 | Get columns | `metadata columns --connection N --table T` |
 | List procedures | `metadata procedures --connection N` |
 | Procedure params | `metadata parameters --connection N --procedure P` |
-| Run SQL (SELECT/DML) | `query sql --connection N --sql "SQL"` |
+| Run SQL (SELECT/DML) | `query sql --connection N --sql "SQL" [--metadata]` |
 | Execute procedure | `query sql --connection N --sql "EXEC Proc Param='val'"` |
 
 Every subcommand supports `--help` — returns purpose, required args, optional args, and flags. Use when Command Reference doesn't cover your case.
@@ -268,10 +268,11 @@ Name patterns use `%` as a wildcard and are **case-insensitive**. A bare value i
 
 Use only column names confirmed by previous steps. Build incrementally.
 
-`query sql` accepts two optional limits beyond `--connection` and `--sql`:
+`query sql` accepts these optional flags beyond `--connection` and `--sql`:
 
 - `--timeout <seconds>` — query timeout (default `30`). Raise it for slow or large sources.
 - `--max-rows <n>` — maximum rows returned **per result set** (default `1000`). Results are silently capped at this number, so a `SELECT *` on a larger table returns only the first 1000 rows unless you raise `--max-rows`. Use a SQL `LIMIT` to sample deliberately, and raise `--max-rows` when you need a full extract.
+- `--metadata` — include the column schema (names, types) in the output. Omitted by default; add it only when you need column type information.
 
 #### SELECT
 
@@ -281,21 +282,24 @@ cdatacli query sql --connection <name> --sql "SELECT [Id], [Name], [Status] FROM
 cdatacli query sql --connection <name> --sql "SELECT a.[Id], a.[Name], b.[Name] AS Related FROM [TableA] a LEFT JOIN [TableB] b ON a.[ForeignKey] = b.[Id] LIMIT 10"
 ```
 
-**Reading the output.** `query sql` returns the same JSON shape for every data source (the CLI builds it from the result set; `--compact` only removes whitespace). The top-level shape depends on the query kind:
+**Reading the output.** `query sql` returns the same JSON shape for every data source (`--compact` only removes whitespace). By default the output contains only the data. The top-level shape depends on the query kind:
 
 ```json
-// SELECT (one result set):
+// SELECT (one result set) — default:
+{ "resultset": [ { "cnt": 368 } ] }
+
+// SELECT with --metadata — adds a column-schema array:
 { "metadata": [ { "name": "cnt", "typeName": "INT", ... } ], "resultset": [ { "cnt": 368 } ] }
 
 // INSERT / UPDATE / DELETE, or a statement that returns nothing:
 { "affectedRows": 3 }
 
-// Multiple result sets (batch): each entry is one of the two shapes above
-{ "results": [ { "metadata": [...], "resultset": [...] }, { "affectedRows": 2 } ] }
+// Multiple result sets (batch): each entry is one of the shapes above
+{ "results": [ { "resultset": [...] }, { "affectedRows": 2 } ] }
 ```
 
 - **Row data for a SELECT is always under `resultset`** — an array of row objects keyed by column name. To count rows, count the `resultset` array (above, 1 row whose `cnt` is 368). For batches, read `results[].resultset`.
-- `metadata` describes the columns (names, types), not the data — ignore it when reading values.
+- `metadata` (column names/types) is **omitted by default** and only appears when you pass `--metadata`; it's schema, not data, so ignore it when reading values.
 - There is **no `rows` key**, for any source. A SELECT returned no data only when `resultset` is `[]`. Do not infer "0 rows" from a missing `rows` field, and do not assume the table name is wrong because you can't find row data — look under `resultset`.
 
 Pipe to `jq` with `--compact`, reading rows from `.resultset`:
