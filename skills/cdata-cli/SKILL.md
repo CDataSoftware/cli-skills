@@ -328,14 +328,23 @@ cdatacli query sql --connection <name> --sql "EXEC ProcedureName Param1='value1'
 
 ### Step 8: Generate Application Code
 
-If the user's goal includes generating application code, use the validated SQL, driver path (from `drivers list`), and connection string to generate standalone code.
+Steps 1–7 (connect, discover schema, validate SQL) are language-agnostic and are this
+skill's job. **Once the goal shifts from exploring data to writing application code, hand
+off to the specialized building skill for the target driver technology.** Those skills
+specify the non-obvious, per-technology specifics this discovery skill deliberately leaves
+out: where to obtain the driver (NuGet, CData's Python repo, system install), how to
+license it, the connection idiom, and language-specific gotchas. Carry the validated SQL
+and (non-secret) connection details from Steps 1–7 into whichever skill you invoke.
 
-#### Driver Locations
+**Pick the building skill by the app's language / driver technology:**
 
-**JDBC (Java):**
-- Windows: `C:\Program Files\CData\CData JDBC Driver for <DataSource> <Year>\lib\cdata.jdbc.<datasource>.jar`
-- macOS: `/Applications/CData/CData JDBC Driver for <DataSource> <Year>/lib/cdata.jdbc.<datasource>.jar`
-- CLI-bundled: `./` or `./lib/cdata.jdbc.<datasource>.jar` next to the CLI executable
-- Driver class: `cdata.jdbc.<source>.<Source>Driver`
-- JDBC URL: `jdbc:<source>:<connection-string>`
-- License file: same directory, `cdata.jdbc.<datasource>.lic`
+| Building in… | Invoke skill | Driver technology |
+|---|---|---|
+| **Python** | `cdata-cli-python` | CData Python Connector |
+| **C# / .NET** (also VB.NET, F#) | `cdata-cli-adonet` | ADO.NET Data Provider |
+| **Node.js / JavaScript / TypeScript**, or **any non-JVM language** (Go, PHP, Ruby, Rust, C/C++) | `cdata-cli-odbc` | ODBC Driver |
+| **Java / JVM** (also Kotlin, Scala) | `cdata-cli-java` | JDBC Driver |
+
+Invoke the matching building skill **before** writing code. Default to the
+language's native technology and treat `cdata-cli-odbc`
+as the cross-language fallback.
