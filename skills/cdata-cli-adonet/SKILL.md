@@ -35,14 +35,20 @@ The provider follows standard ADO.NET naming — for `<Source>` (e.g. `Salesforc
 
 ## Prerequisite: Discovery Done First
 
+**If `cdata-cli` has not been used yet in this session, stop and invoke it first.** This skill only covers the build phase — connection setup, schema discovery, and SQL validation must be done through `cdata-cli` before continuing here.
+
 This skill assumes `cdata-cli` has already been used to confirm the source connects and to
 validate the exact tables/columns and SQL the app will run. Reuse those results here. If
 discovery created a `cdatacli` connection that did an **OAuth** browser sign-in, note its
 `OAuthSettingsLocation` — the .NET app can point at the same cached token file and skip
 re-authenticating (see **Connect**).
 
-> The CLI's `drivers download` is JDBC-only and cannot fetch the ADO.NET provider. It comes
-> from NuGet (below).
+> **The CLI is JDBC-only.** It cannot install, activate, or create connections for the
+> ADO.NET Data Provider — that is what this skill covers. The ADO.NET provider is a
+> separate driver edition and must be obtained and licensed independently (steps below).
+>
+> The CLI's `drivers download` fetches JDBC jars only; the ADO.NET provider comes from
+> NuGet (below).
 
 ---
 
@@ -135,23 +141,32 @@ and `prod.inf`; find it under the package:
 %USERPROFILE%\.nuget\packages\cdata.<source>\<ver>\tools\install-license.dll   # global NuGet cache
 ```
 
-It reads `prod.inf` from the current directory, so **run it from its own folder**. Because
-it prompts for input, **have the user run it in a normal terminal — outside the AI coding
-session** (an AI session can't reliably answer the prompts, and it hangs if run with no
-arguments).
+It reads `prod.inf` from the current directory, so **run it from its own folder**. The tool
+always prompts for `Name:` and `Email:` — it crashes with an unhandled exception if either
+is blank. There are no CLI flags for them; they are always supplied interactively.
 
-**Trial:** run it and answer the `Name:` / `Email:` prompts:
+**Trial:** ask the user for their name and email, then pipe them in and run the tool
+directly — no secrets are involved:
 
 ```powershell
+# PowerShell — pipe name and email, run from the tools folder
 cd "<project>\packages\CData.<Source>\tools"
-dotnet .\install-license.dll
+"First Last`nname@example.com" | dotnet .\install-license.dll
 ```
 
-**Purchased key** (the key is a secret — also keep this outside an AI session):
+```bash
+# bash
+cd "<project>/packages/CData.<Source>/tools"
+printf "First Last\nname@example.com\n" | dotnet ./install-license.dll
+```
+
+**Purchased key** (the key is a secret — have the user run this outside the AI session):
 
 ```powershell
 cd "<project>\packages\CData.<Source>\tools"
 dotnet .\install-license.dll YOUR-PRODUCT-KEY
+# Prompts: Name: <enter name>
+#          Email: <enter email>
 ```
 
 Activation writes `System.Data.CData.<Source>.lic` next to the provider DLL
@@ -251,4 +266,4 @@ Build to confirm the reference resolves: `dotnet build`.
 | `You must install or update .NET to run this application` | The target TFM's **runtime** isn't installed. Simplest: target the SDK's own version (Step 2), which ships a matching runtime; otherwise install the missing runtime. |
 | `'OAuthClientId' and 'OAuthClientSecret' are needed to initiate OAuth` | Source has no embedded OAuth app; supply client id/secret in the connection string (from env vars / user-secrets), matching the app whose refresh token is cached. |
 | Reference/`using System.Data.CData.<Source>` not found | Package not restored or wrong package. Ensure `dotnet add package CData.<Source>` (the plain provider, not an `EntityFrameworkCore` variant) and `dotnet restore`. |
-| `install-license.dll` hangs or errors on `prod.inf` | Run it **from the `tools/` folder** with `Name`/`Email` (trial) or a product-key argument; don't run it with no arguments. |
+| `install-license.dll` crashes (`NullReferenceException`) | Name or Email was blank. The tool has no CLI flags for them — pipe them in for trial (Step 3), or enter them at the prompt for a purchased key. Always run from the `tools/` folder so it can find `prod.inf`. |

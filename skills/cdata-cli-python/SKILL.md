@@ -33,6 +33,8 @@ SQLAlchemy dialects, shipped as a platform-specific wheel.
 
 ## Prerequisite: Discovery Done First
 
+**If `cdata-cli` has not been used yet in this session, stop and invoke it first.** This skill only covers the build phase — connection setup, schema discovery, and SQL validation must be done through `cdata-cli` before continuing here.
+
 This skill assumes `cdata-cli` has already been used to:
 
 - confirm the source connects, and
@@ -42,8 +44,12 @@ Reuse those results here. In particular, if discovery created a `cdatacli` conne
 performed an **OAuth** browser sign-in, note its `OAuthSettingsLocation` — the Python app
 can point at the same cached token file and skip re-authenticating (see **Connect**).
 
-> The CLI's `drivers download` is JDBC-only and cannot fetch the Python wheel. The wheel
-> comes from CData's Python repository over plain HTTP (below).
+> **The CLI is JDBC-only.** It cannot install, activate, or create connections for the
+> Python Connector — that is what this skill covers. The Python Connector is a separate
+> driver edition and must be obtained and licensed independently (steps below).
+>
+> The CLI's `drivers download` fetches JDBC jars only; the Python wheel comes from
+> CData's Python repository over plain HTTP (below).
 
 ---
 

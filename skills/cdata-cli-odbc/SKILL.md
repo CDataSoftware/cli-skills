@@ -48,11 +48,17 @@ ODBC is specifically required.
 
 ## Prerequisite: Discovery Done First
 
+**If `cdata-cli` has not been used yet in this session, stop and invoke it first.** This skill only covers the build phase — connection setup, schema discovery, and SQL validation must be done through `cdata-cli` before continuing here.
+
 This skill assumes `cdata-cli` has already been used to confirm the source connects and to
 validate the exact tables/columns and SQL the app will run. Reuse those results here. If
 discovery created a `cdatacli` connection that did an **OAuth** browser sign-in, note its
 `OAuthSettingsLocation` — the app's DSN / connection string can point at the same cached
 token file and skip re-authenticating (see **Configure the Connection**).
+
+> **The CLI is JDBC-only.** It cannot install, activate, or create connections for the
+> ODBC Driver — that is what this skill covers. The ODBC Driver is a separate driver
+> edition installed as a system driver; the CLI has no role in obtaining or managing it.
 
 ---
 
@@ -110,6 +116,21 @@ CData ODBC driver's own setup rather than a scripted step here.
 ---
 
 ## Step 3: Configure the Connection
+
+First, check whether a DSN for this source already exists — if so, confirm with the user whether to reuse it:
+
+```powershell
+# Windows — list all User and System DSNs
+Get-OdbcDsn | Where-Object Name -like "*<Source>*"
+# or list everything: Get-OdbcDsn
+```
+
+```bash
+# Linux/macOS
+odbcinst -q -s    # list all registered DSN names
+```
+
+If a suitable DSN exists, skip to Step 4 and connect using `DSN=<name>`. Otherwise, set one up below.
 
 Two ways to connect — a **DSN** (named, stored config) or **DSN-less** (full connection
 string in code). Either way, reuse the properties validated in discovery, and for OAuth

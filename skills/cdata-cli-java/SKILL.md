@@ -33,9 +33,12 @@ there — tables, columns, SQL — runs unchanged through JDBC.
 
 ## Prerequisite: Discovery Done First
 
+**If `cdata-cli` has not been used yet in this session, stop and invoke it first.** This skill only covers the build phase — connection setup, schema discovery, and SQL validation must be done through `cdata-cli` before continuing here.
+
 This skill assumes `cdata-cli` has already been used to confirm the source connects and to
-validate the tables/columns and SQL the app will run. Because the CLI runs on JDBC, two
-things are usually **already done** for you:
+validate the tables/columns and SQL the app will run. Because the CLI is Java-native and
+runs on JDBC, this is the smoothest handoff of all the build skills — two things are usually
+**already done** for you:
 
 - **The jar is already downloaded** — `cdatacli drivers download` placed
   `cdata.jdbc.<source>.jar` in `./lib/` (or you know the installed-product path).
