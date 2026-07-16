@@ -184,6 +184,8 @@ cdatacli drivers activate <Driver> --name "John Doe" --email "you@example.com" -
 cdatacli drivers activate <Driver> --name "John Doe" --email "you@example.com" --key "XXXXX-XXXXX"
 ```
 
+If the driver shows an **expired trial**, let the user know the 30-day trial period has ended and that a purchased license is required to continue. Direct them to [https://www.cdata.com/jdbc](https://www.cdata.com/jdbc) to purchase a JDBC driver license, then follow the license-key notice above to activate with their key outside the AI session.
+
 ---
 
 ### Step 4: Check Connection Properties
