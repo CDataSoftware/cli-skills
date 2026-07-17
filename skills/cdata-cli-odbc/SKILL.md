@@ -56,9 +56,10 @@ discovery created a `cdatacli` connection that did an **OAuth** browser sign-in,
 `OAuthSettingsLocation` — the app's DSN / connection string can point at the same cached
 token file and skip re-authenticating (see **Configure the Connection**).
 
-> **The CLI is JDBC-only.** It cannot install, activate, or create connections for the
-> ODBC Driver — that is what this skill covers. The ODBC Driver is a separate driver
-> edition installed as a system driver; the CLI has no role in obtaining or managing it.
+> **For runtime, the CLI works directly with Java/JDBC only.** It cannot install, activate,
+> or create connections for the ODBC Driver — that is what this skill covers. The ODBC
+> Driver is a separate runtime driver edition installed as a system driver; the CLI has no
+> role in obtaining or managing it.
 
 ---
 

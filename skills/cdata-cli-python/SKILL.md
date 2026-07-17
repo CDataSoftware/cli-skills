@@ -44,9 +44,10 @@ Reuse those results here. In particular, if discovery created a `cdatacli` conne
 performed an **OAuth** browser sign-in, note its `OAuthSettingsLocation` — the Python app
 can point at the same cached token file and skip re-authenticating (see **Connect**).
 
-> **The CLI is JDBC-only.** It cannot install, activate, or create connections for the
-> Python Connector — that is what this skill covers. The Python Connector is a separate
-> driver edition and must be obtained and licensed independently (steps below).
+> **For runtime, the CLI works directly with Java/JDBC only.** It cannot install, activate,
+> or create connections for the Python Connector — that is what this skill covers. The
+> Python Connector is a separate runtime driver edition and must be obtained and licensed
+> independently (steps below).
 >
 > The CLI's `drivers download` fetches JDBC jars only; the Python wheel comes from
 > CData's Python repository over plain HTTP (below).

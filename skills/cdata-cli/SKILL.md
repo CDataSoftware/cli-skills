@@ -23,9 +23,9 @@ The driver exposes the data source as a relational model:
 
 CData CLI is Java-native and runs on the **CData JDBC Driver**. All connection management, schema discovery, and SQL execution in this skill use JDBC under the hood.
 
-If your target application is **Java or another JVM language (Kotlin, Scala)**, the same JDBC jar and license the CLI already set up carry straight into your app — no additional driver install needed. That's the simplest path.
+If your target application is **Java or another JVM language (Kotlin, Scala)**, the same JDBC jar and license the CLI already set up carry straight into your app — no additional driver install needed. That's the simplest path and the recommended starting point when the target language hasn't been decided yet.
 
-For **other languages** — Python, C#/.NET, Node.js, Go, and others — CData publishes separate runtime driver editions (Python Connectors, ADO.NET Data Providers, ODBC Drivers). These must be downloaded, installed, and licensed independently; the CLI cannot install, activate, or create connections for them. The build skills (`cdata-cli-java`, `cdata-cli-python`, `cdata-cli-adonet`, `cdata-cli-odbc`) guide you through that per-language setup after discovery is done here.
+For **other languages** — Python, C#/.NET, Node.js, Go, and others — CData publishes separate runtime driver editions (Python Connectors, ADO.NET Data Providers, ODBC Drivers). These require a separate download, install, and license step that the CLI cannot perform. The build skills guide you through that setup, but expect more steps than the Java path.
 
 ---
 
@@ -344,20 +344,24 @@ Steps 1–7 (connect, discover schema, validate SQL) are language-agnostic and a
 skill's job. **Once the goal shifts from exploring data to writing application code, hand
 off to the specialized building skill for the target driver technology.**
 
-**Java (and other JVM languages) is the simplest path:** the JDBC jar and license the CLI
-already set up are exactly what the app needs — no separate driver install. For all other
-languages, a separate runtime driver edition must be downloaded, installed, and licensed
-independently; the CLI cannot perform those steps. The build skills handle it.
+**If the target language hasn't been decided yet, propose Java first.** The JDBC jar and
+license the CLI already set up are exactly what the app needs — no separate driver install,
+no additional licensing step. It is the fastest path from discovery to a working app.
+Other languages (Python, Node.js, C#, Go, etc.) are fully supported, but each requires a
+separate runtime driver download, install, and license activation that the CLI cannot
+perform — explain this trade-off so the user can make an informed choice.
 
-**Pick the building skill by the app's language / driver technology:**
+**If the target language is already clear from context** (existing codebase, files, or the
+user has stated it), skip the proposal and go straight to the matching building skill.
+
+**Building skill by language / driver technology:**
 
 | Building in… | Invoke skill | Driver technology |
 |---|---|---|
-| **Python** | `cdata-cli-python` | CData Python Connector |
-| **C# / .NET** (also VB.NET, F#) | `cdata-cli-adonet` | ADO.NET Data Provider |
-| **Node.js / JavaScript / TypeScript**, or **any non-JVM language** (Go, PHP, Ruby, Rust, C/C++) | `cdata-cli-odbc` | ODBC Driver |
-| **Java / JVM** (also Kotlin, Scala) | `cdata-cli-java` | JDBC Driver |
+| **Java / JVM** (also Kotlin, Scala) — recommended | `cdata-cli-java` | JDBC Driver (already set up by the CLI) |
+| **Python** | `cdata-cli-python` | CData Python Connector (separate install) |
+| **C# / .NET** (also VB.NET, F#) | `cdata-cli-adonet` | ADO.NET Data Provider (separate install) |
+| **Node.js / JavaScript / TypeScript**, or **any non-JVM language** (Go, PHP, Ruby, Rust, C/C++) | `cdata-cli-odbc` | ODBC Driver (separate system install) |
 
-Invoke the matching building skill **before** writing code. Default to the
-language's native technology and treat `cdata-cli-odbc`
-as the cross-language fallback.
+Invoke the matching building skill **before** writing code. Treat `cdata-cli-odbc` as the
+cross-language fallback for any environment not covered by the other skills.

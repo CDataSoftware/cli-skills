@@ -43,9 +43,10 @@ discovery created a `cdatacli` connection that did an **OAuth** browser sign-in,
 `OAuthSettingsLocation` — the .NET app can point at the same cached token file and skip
 re-authenticating (see **Connect**).
 
-> **The CLI is JDBC-only.** It cannot install, activate, or create connections for the
-> ADO.NET Data Provider — that is what this skill covers. The ADO.NET provider is a
-> separate driver edition and must be obtained and licensed independently (steps below).
+> **For runtime, the CLI works directly with Java/JDBC only.** It cannot install, activate,
+> or create connections for the ADO.NET Data Provider — that is what this skill covers. The
+> ADO.NET provider is a separate runtime driver edition and must be obtained and licensed
+> independently (steps below).
 >
 > The CLI's `drivers download` fetches JDBC jars only; the ADO.NET provider comes from
 > NuGet (below).
