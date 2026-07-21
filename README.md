@@ -8,15 +8,28 @@ The Skills follow the [vercel-labs/skills](https://github.com/vercel-labs/skills
 
 | Skill | Description |
 |---|---|
-| [`cdata-cli`](skills/cdata-cli/SKILL.md) | Connect, query, explore schema, run SQL, search/download/activate CData JDBC drivers, and generate source-specific skills via the `cdatacli` tool. |
+| [`cdata-cli`](skills/cdata-cli/SKILL.md) | **Discovery** — connect, query, explore schema, run SQL, download/activate JDBC drivers, and generate source-specific skills via `cdatacli`. Foundation for the build skills below. |
+| [`cdata-cli-python`](skills/cdata-cli-python/SKILL.md) | **Build** Python apps with the CData Python Connector (DB-API 2.0). |
+| [`cdata-cli-adonet`](skills/cdata-cli-adonet/SKILL.md) | **Build** C# / .NET apps with the CData ADO.NET Data Provider (NuGet). |
+| [`cdata-cli-odbc`](skills/cdata-cli-odbc/SKILL.md) | **Build** Node.js / non-JVM apps with the CData ODBC Driver. |
+| [`cdata-cli-java`](skills/cdata-cli-java/SKILL.md) | **Build** Java apps with the CData JDBC Driver. |
 
 ## Install
 
-Install the skills:
+Install all skills:
 
 ```bash
 npx skills add CDataSoftware/cli-skills
 ```
+
+Or install individual skills by name:
+
+```bash
+npx skills add CDataSoftware/cli-skills --skill cdata-cli
+npx skills add CDataSoftware/cli-skills --skill cdata-cli-python
+```
+
+The build skills assume `cdata-cli` for discovery — install it alongside whichever build skill(s) you need.
 
 ## Prerequisites
 
