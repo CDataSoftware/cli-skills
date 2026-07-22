@@ -66,6 +66,9 @@ If `cdatacli --version` is missing, install:
 | Inspect connection properties | `drivers connectionprops <Driver> [--full]` |
 | Generate driver-specific skill | `drivers skill <Driver>` |
 | Create connection | `connection create --driver <Driver> --name N --connectionstring CS` |
+| Update connection (merge) | `connection update --name N --connectionstring CS` |
+| Update connection (replace) | `connection update --name N --connectionstring CS --replace` |
+| Remove properties | `connection update --name N --unset "Key1,Key2"` |
 | List connections | `connection list` |
 | Delete connection | `connection delete --name N` |
 | List catalogs | `metadata catalogs --connection N` |
@@ -245,8 +248,13 @@ Common patterns:
 
 ```bash
 cdatacli connection list
+cdatacli connection update --name "<connection-name>" --connectionstring "<new-or-changed-properties>"
+cdatacli connection update --name "<connection-name>" --connectionstring "<properties>" --replace
+cdatacli connection update --name "<connection-name>" --unset "Key1,Key2"
 cdatacli connection delete --name "<connection-name>"
 ```
+
+`connection update` merges new properties into the existing connection by default — useful for changing a single property without recreating the connection. Use `--replace` to swap the entire connection string, or `--unset` to remove specific properties. Property names are case-insensitive. `--replace` and `--unset` cannot be combined.
 
 Connections are saved as encrypted `.conn` files (AES-256):
 
@@ -328,7 +336,7 @@ cdatacli query sql --connection <name> --sql "UPDATE [TableName] SET [Col1] = 'n
 cdatacli query sql --connection <name> --sql "DELETE FROM [TableName] WHERE [Id] = '123'"
 ```
 
-If writes fail, the connection may have `ReadOnly=true`. Do not change this on your own — point it out to the user and ask whether they want to recreate the connection without `ReadOnly=true` before taking any action.
+If writes fail, the connection may have `ReadOnly=true`. Do not change this on your own — point it out to the user and ask whether they want to remove it. If they confirm, use `connection update --unset "ReadOnly"` rather than recreating the connection.
 
 #### Stored Procedures
 
