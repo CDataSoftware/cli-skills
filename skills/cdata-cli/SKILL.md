@@ -68,6 +68,7 @@ If `cdatacli --version` is missing, install:
 | Create connection | `connection create --driver <Driver> --name N --connectionstring CS` |
 | Update connection (merge) | `connection update --name N --connectionstring CS` |
 | Update connection (replace) | `connection update --name N --connectionstring CS --replace` |
+| Update, skip validation | `connection update --name N --connectionstring CS --force` |
 | Remove properties | `connection update --name N --unset "Key1,Key2"` |
 | List connections | `connection list` |
 | Delete connection | `connection delete --name N` |
@@ -254,7 +255,7 @@ cdatacli connection update --name "<connection-name>" --unset "Key1,Key2"
 cdatacli connection delete --name "<connection-name>"
 ```
 
-`connection update` merges new properties into the existing connection by default — useful for changing a single property without recreating the connection. Use `--replace` to swap the entire connection string, or `--unset` to remove specific properties. Property names are case-insensitive. `--replace` and `--unset` cannot be combined.
+`connection update` merges new properties into the existing connection by default — useful for changing a single property without recreating the connection. Use `--replace` to swap the entire connection string, or `--unset` to remove specific properties. Property names are case-insensitive. `--replace` and `--unset` cannot be combined. Use `--force` to skip connection validation — useful for placeholder connections or testing without a live source.
 
 Connections are saved as encrypted `.conn` files (AES-256):
 
