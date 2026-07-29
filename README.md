@@ -14,6 +14,16 @@ The Skills follow the [vercel-labs/skills](https://github.com/vercel-labs/skills
 | [`cdata-cli-odbc`](skills/cdata-cli-odbc/SKILL.md) | **Build** Node.js / non-JVM apps with the CData ODBC Driver. |
 | [`cdata-cli-java`](skills/cdata-cli-java/SKILL.md) | **Build** Java apps with the CData JDBC Driver. |
 
+## Prerequisites
+
+The `cdata-cli` skill drives the `cdatacli` executable — a Java CLI (requires Java 17+) for CData JDBC drivers. After installing the CLI, `cdatacli` is on `PATH` and discovers drivers from `./` or `./lib/` relative to the executable.
+
+- Windows (PowerShell): `irm https://downloads.cdata.com/cdatabuilds/builds/free/cdatacli/install-cdatacli-windows.ps1 | iex`
+- macOS: `curl -fsSL https://downloads.cdata.com/cdatabuilds/builds/free/cdatacli/install-cdatacli-macos.sh | bash`
+- Linux: `curl -fsSL https://downloads.cdata.com/cdatabuilds/builds/free/cdatacli/install-cdatacli-linux.sh | bash`
+
+Driver jars can be fetched via `cdatacli drivers download` from the CData driver catalog.
+
 ## Install
 
 Install all skills:
@@ -31,12 +41,27 @@ npx skills add CDataSoftware/cli-skills --skill cdata-cli-python
 
 The build skills assume `cdata-cli` for discovery — install it alongside whichever build skill(s) you need.
 
-## Prerequisites
+## Quickstart
 
-The `cdata-cli` skill drives the `cdatacli` executable — a Java CLI (requires Java 17+) for CData JDBC drivers. After installing the CLI, `cdatacli` is on `PATH` and discovers drivers from `./` or `./lib/` relative to the executable.
+These skills are designed to be used **inside your AI coding tool** (Claude Code, Cursor, GitHub Copilot, Gemini CLI, etc.). A single prompt kicks off the entire flow — the agent handles driver setup, connection, schema discovery, and code generation end-to-end.
 
-- Windows (PowerShell): `irm https://downloads.cdata.com/cdatabuilds/builds/free/cdatacli/install-cdatacli-windows.ps1 | iex`
-- macOS: `curl -fsSL https://downloads.cdata.com/cdatabuilds/builds/free/cdatacli/install-cdatacli-macos.sh | bash`
-- Linux: `curl -fsSL https://downloads.cdata.com/cdatabuilds/builds/free/cdatacli/install-cdatacli-linux.sh | bash`
+> *"Connect to Salesforce and build a Python app that lists open opportunities"*
 
-Driver jars can be fetched via `cdatacli drivers download` from the CData driver catalog.
+The agent will work through the process, running commands like these along the way:
+
+```bash
+# Find and activate a driver
+cdatacli drivers search --driver salesforce
+cdatacli drivers download --artifact-id <id>
+cdatacli drivers activate Salesforce --name "Your Name" --email you@example.com
+
+# Create a connection
+cdatacli connection create --driver Salesforce --name myconn \
+  --connectionstring "AuthScheme=OAuth;InitiateOAuth=GETANDREFRESH"
+
+# Explore schema and validate SQL
+cdatacli metadata tables --connection myconn
+cdatacli query sql --connection myconn --sql "SELECT Id, Name FROM Opportunity WHERE IsClosed=false LIMIT 10"
+```
+
+Once discovery is complete, it hands off to the right build skill for your language and generates working application code.
