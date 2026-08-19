@@ -44,6 +44,8 @@ Requires Java 17+. Drivers are discovered from `./` or `./lib/` relative to the 
 > - `\` line-continuation → backtick `` ` ``
 > - `> file` writes UTF-16 on **Windows PowerShell 5.1**, which can corrupt a generated `SKILL.md`; use `| Out-File -Encoding utf8 file` instead (PowerShell 7+ already writes UTF-8).
 > - Wrap a connection string in single quotes if it contains `$` or other characters the shell would expand.
+> - **Connection-string quoting:** When a value contains `;` or other special characters (e.g. a password), wrap the **outer** `--connectionstring` in double quotes and each **inner value** in single quotes — this survives both PowerShell 7 and CMD unchanged:
+>   `--connectionstring "AuthScheme=Basic;User=me;Password='p;w=d';Other='MaxThreads=10'"`
 
 If `cdatacli --version` is missing, install:
 
@@ -57,6 +59,7 @@ If `cdatacli --version` is missing, install:
 
 | Goal | Command |
 |---|---|
+| Accept EULA (required first run) | `license [-y]` |
 | List installed drivers | `drivers list` |
 | Search remote driver catalog | `drivers search [--driver <name-or-artifact-id>]` |
 | Download driver jar | `drivers download --artifact-id <id> [--output <dir>]` |
@@ -140,6 +143,14 @@ If that fails (command not found), install it and then re-check `cdatacli --vers
 - Linux: `curl -fsSL https://downloads.cdata.com/cdatabuilds/builds/free/cdatacli/install-cdatacli-linux.sh | bash`
 
 The CLI requires Java 17+.
+
+**First-run EULA:** On first use the CLI requires accepting the CData End User License Agreement — until then, commands exit with a license-agreement error. If you hit that message, run once:
+
+```bash
+cdatacli license -y
+```
+
+This accepts the EULA at [https://www.cdata.com/company/legal/eula/](https://www.cdata.com/company/legal/eula/); acceptance is stored per-machine, so there's no re-prompt on later commands.
 
 ---
 
