@@ -168,7 +168,13 @@ If a source-specific SKILL is already installed in the AI tool's skills director
 cdatacli drivers list
 ```
 
-If the driver appears with `"activated": true`, skip to Step 4. If the driver is missing, download it from the CData driver catalog:
+`drivers list` output includes `licenseType` (`Trial`, or a human-readable type like `Enterprise`/`Developer`/`Server` for a purchased license) and, for trial licenses only, `trialDaysLeft` (clamped to `0` once expired — at which point `active` becomes `false`).
+
+If the driver appears with `"activated": true`, check `licenseType`:
+- **`Trial` with `trialDaysLeft` low (e.g. ≤ 7) or `0`:** let the user know how many days remain (or that the trial has expired) and point them to [https://www.cdata.com/jdbc](https://www.cdata.com/jdbc) to purchase before continuing — don't just silently proceed.
+- Otherwise, skip to Step 4.
+
+If the driver is missing, download it from the CData driver catalog:
 
 ```bash
 cdatacli drivers search --driver <source>          # find the artifactId
@@ -199,7 +205,9 @@ cdatacli drivers activate <Driver> --name "John Doe" --email "you@example.com" -
 cdatacli drivers activate <Driver> --name "John Doe" --email "you@example.com" --key "XXXXX-XXXXX"
 ```
 
-If the driver shows an **expired trial**, let the user know the 30-day trial period has ended and that a purchased license is required to continue. Direct them to [https://www.cdata.com/jdbc](https://www.cdata.com/jdbc) to purchase a JDBC driver license, then follow the license-key notice above to activate with their key outside the AI session.
+If the driver shows an **expired trial** (`trialDaysLeft: 0`, `active: false`), let the user know the 30-day trial period has ended and that a purchased license is required to continue. Direct them to [https://www.cdata.com/jdbc](https://www.cdata.com/jdbc) to purchase a JDBC driver license, then follow the license-key notice above to activate with their key outside the AI session.
+
+After activating a trial (or on any later `drivers list` check), report `trialDaysLeft` to the user so they aren't surprised by expiry — remind them the trial is time-limited and that they can purchase a license anytime at [https://www.cdata.com/jdbc](https://www.cdata.com/jdbc) to convert before it runs out.
 
 ---
 
