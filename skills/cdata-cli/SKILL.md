@@ -44,6 +44,8 @@ Requires Java 17+. Drivers are discovered from `./` or `./lib/` relative to the 
 > - `\` line-continuation → backtick `` ` ``
 > - `> file` writes UTF-16 on **Windows PowerShell 5.1**, which can corrupt a generated `SKILL.md`; use `| Out-File -Encoding utf8 file` instead (PowerShell 7+ already writes UTF-8).
 > - Wrap a connection string in single quotes if it contains `$` or other characters the shell would expand.
+> - **Connection-string quoting:** When a value contains `;` or other special characters (e.g. a password), wrap the **outer** `--connectionstring` in double quotes and each **inner value** in single quotes — this survives both PowerShell 7 and CMD unchanged:
+>   `--connectionstring "AuthScheme=Basic;User=me;Password='p;w=d';Other='MaxThreads=10'"`
 
 If `cdatacli --version` is missing, install:
 
@@ -57,6 +59,7 @@ If `cdatacli --version` is missing, install:
 
 | Goal | Command |
 |---|---|
+| Accept EULA (required first run) | `license [-y]` |
 | List installed drivers | `drivers list` |
 | Search remote driver catalog | `drivers search [--driver <name-or-artifact-id>]` |
 | Download driver jar | `drivers download --artifact-id <id> [--output <dir>]` |
@@ -66,6 +69,10 @@ If `cdatacli --version` is missing, install:
 | Inspect connection properties | `drivers connectionprops <Driver> [--full]` |
 | Generate driver-specific skill | `drivers skill <Driver>` |
 | Create connection | `connection create --driver <Driver> --name N --connectionstring CS` |
+| Update connection (merge) | `connection update --name N --connectionstring CS` |
+| Update connection (replace) | `connection update --name N --connectionstring CS --replace` |
+| Update, skip validation | `connection update --name N --connectionstring CS --force` |
+| Remove properties | `connection update --name N --unset "Key1,Key2"` |
 | List connections | `connection list` |
 | Delete connection | `connection delete --name N` |
 | List catalogs | `metadata catalogs --connection N` |
@@ -136,6 +143,14 @@ If that fails (command not found), install it and then re-check `cdatacli --vers
 - Linux: `curl -fsSL https://downloads.cdata.com/cdatabuilds/builds/free/cdatacli/install-cdatacli-linux.sh | bash`
 
 The CLI requires Java 17+.
+
+**First-run EULA:** On first use the CLI requires accepting the CData End User License Agreement — until then, commands exit with a license-agreement error. If you hit that message, run once:
+
+```bash
+cdatacli license -y
+```
+
+This accepts the EULA at [https://www.cdata.com/company/legal/eula/](https://www.cdata.com/company/legal/eula/); acceptance is stored per-machine, so there's no re-prompt on later commands.
 
 ---
 
@@ -245,8 +260,13 @@ Common patterns:
 
 ```bash
 cdatacli connection list
+cdatacli connection update --name "<connection-name>" --connectionstring "<new-or-changed-properties>"
+cdatacli connection update --name "<connection-name>" --connectionstring "<properties>" --replace
+cdatacli connection update --name "<connection-name>" --unset "Key1,Key2"
 cdatacli connection delete --name "<connection-name>"
 ```
+
+`connection update` merges new properties into the existing connection by default — useful for changing a single property without recreating the connection. Use `--replace` to swap the entire connection string, or `--unset` to remove specific properties. Property names are case-insensitive. `--replace` and `--unset` cannot be combined. Use `--force` to skip connection validation — useful for placeholder connections or testing without a live source.
 
 Connections are saved as encrypted `.conn` files (AES-256):
 
@@ -328,7 +348,7 @@ cdatacli query sql --connection <name> --sql "UPDATE [TableName] SET [Col1] = 'n
 cdatacli query sql --connection <name> --sql "DELETE FROM [TableName] WHERE [Id] = '123'"
 ```
 
-If writes fail, the connection may have `ReadOnly=true`. Do not change this on your own — point it out to the user and ask whether they want to recreate the connection without `ReadOnly=true` before taking any action.
+If writes fail, the connection may have `ReadOnly=true`. Do not change this on your own — point it out to the user and ask whether they want to remove it. If they confirm, use `connection update --unset "ReadOnly"` rather than recreating the connection.
 
 #### Stored Procedures
 
