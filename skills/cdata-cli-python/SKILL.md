@@ -140,24 +140,14 @@ installlic_<source>/install-license.exe   # Windows
 installlic_<source>/install-license.sh    # macOS/Linux
 ```
 
-It is **interactive** and must run **from its own folder** (it reads `prod.inf` from the
-current directory). Because it prompts for input, **have the user run it in a normal
-terminal — outside the AI coding session** (an AI session can't reliably answer the
-prompts, and it hangs if run with no arguments).
-
-**Trial:** run it and answer the `Name:` and `Email:` prompts:
+Run it **from its own folder** (it reads `prod.inf` from the current directory). Pass
+`--name`/`--email` to run non-interactively (build 26.0.9704+; older builds prompt, so the
+user must run them in a normal terminal). Use `./install-license.sh` on macOS/Linux:
 
 ```bash
 cd <installlic_<source> folder>       # path located above
-.\install-license.exe                 # Windows;  macOS/Linux: ./install-license.sh
-# then answer the Name: and Email: prompts
-```
-
-**Purchased key (do this outside an AI session — the key is a secret):**
-
-```bash
-cd <installlic_<source> folder>
-.\install-license.exe YOUR-PRODUCT-KEY   # Windows;  macOS/Linux: ./install-license.sh YOUR-PRODUCT-KEY
+./install-license.exe --name "First Last" --email you@example.com               # trial — safe to run here
+./install-license.exe --name "First Last" --email you@example.com <PRODUCT-KEY> # key is a secret — user runs outside the AI session
 ```
 
 Re-run the import/query check after activation to confirm it took.
@@ -261,4 +251,4 @@ with engine.connect() as c:
 | `'OAuthClientId' and 'OAuthClientSecret' are needed to initiate OAuth` | Source has no embedded OAuth app; supply client id/secret in the connection string (from env vars). Must match the app whose refresh token is cached. |
 | `object does not support the context manager protocol` | Used `with mod.connect(...)`. Replace with explicit `try/finally`|
 | `ModuleNotFoundError: No module named 'cdata.<source>'` | Wheel not installed in the active interpreter — confirm the venv is active / the wheel installed, then re-check `import cdata.<source>`. |
-| `install-license.exe` hangs or errors on `prod.inf` | Run it **from its own folder** with a `Name`/`Email` (trial) or a product key argument; don't run it with no arguments. |
+| `install-license.exe` hangs or errors on `prod.inf` | Run it **from its own folder** with `--name`/`--email` (Step 3); without them it waits at prompts. Builds before 26.0.9704 don't support the flags — upgrade, or have the user run it interactively. |

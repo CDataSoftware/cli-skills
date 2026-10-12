@@ -142,32 +142,13 @@ and `prod.inf`; find it under the package:
 %USERPROFILE%\.nuget\packages\cdata.<source>\<ver>\tools\install-license.dll   # global NuGet cache
 ```
 
-It reads `prod.inf` from the current directory, so **run it from its own folder**. The tool
-always prompts for `Name:` and `Email:` — it crashes with an unhandled exception if either
-is blank. There are no CLI flags for them; they are always supplied interactively.
-
-**Trial:** ask the user for their name and email, then pipe them in and run the tool
-directly — no secrets are involved:
-
-```powershell
-# PowerShell — pipe name and email, run from the tools folder
-cd "<project>\packages\CData.<Source>\tools"
-"First Last`nname@example.com" | dotnet .\install-license.dll
-```
+It reads `prod.inf` from the current directory, so **run it from its own folder**. Pass
+`--name`/`--email` to run non-interactively (build 26.0.9704+; older builds prompt instead).
 
 ```bash
-# bash
 cd "<project>/packages/CData.<Source>/tools"
-printf "First Last\nname@example.com\n" | dotnet ./install-license.dll
-```
-
-**Purchased key** (the key is a secret — have the user run this outside the AI session):
-
-```powershell
-cd "<project>\packages\CData.<Source>\tools"
-dotnet .\install-license.dll YOUR-PRODUCT-KEY
-# Prompts: Name: <enter name>
-#          Email: <enter email>
+dotnet ./install-license.dll --name "First Last" --email you@example.com               # trial — safe to run here
+dotnet ./install-license.dll --name "First Last" --email you@example.com <PRODUCT-KEY> # key is a secret — user runs outside the AI session
 ```
 
 Activation writes `System.Data.CData.<Source>.lic` next to the provider DLL
@@ -267,4 +248,4 @@ Build to confirm the reference resolves: `dotnet build`.
 | `You must install or update .NET to run this application` | The target TFM's **runtime** isn't installed. Simplest: target the SDK's own version (Step 2), which ships a matching runtime; otherwise install the missing runtime. |
 | `'OAuthClientId' and 'OAuthClientSecret' are needed to initiate OAuth` | Source has no embedded OAuth app; supply client id/secret in the connection string (from env vars / user-secrets), matching the app whose refresh token is cached. |
 | Reference/`using System.Data.CData.<Source>` not found | Package not restored or wrong package. Ensure `dotnet add package CData.<Source>` (the plain provider, not an `EntityFrameworkCore` variant) and `dotnet restore`. |
-| `install-license.dll` crashes (`NullReferenceException`) | Name or Email was blank. The tool has no CLI flags for them — pipe them in for trial (Step 3), or enter them at the prompt for a purchased key. Always run from the `tools/` folder so it can find `prod.inf`. |
+| `install-license.dll` crashes (`NullReferenceException`) | Name or Email was blank. Pass `--name`/`--email` (Step 3); builds before 26.0.9704 only take them at the prompts. Always run from the `tools/` folder so it can find `prod.inf`. |
