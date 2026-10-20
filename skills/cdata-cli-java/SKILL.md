@@ -105,7 +105,8 @@ To activate (if needed):
   cdatacli drivers activate <Driver> --name "First Last" --email you@example.com --trial
   cdatacli drivers activate <Driver> --name "First Last" --email you@example.com --key XXXXX
   ```
-- **Via the jar's GUI wizard:** double-click / `java -jar cdata.jdbc.<source>.jar`.
+- **Via the jar:** double-click for the GUI wizard, or non-interactively:
+  `java -jar cdata.jdbc.<source>.jar --name "First Last" --email you@example.com --key XXXXX`.
 
 The driver looks for its license next to the jar (`cdata.jdbc.<source>.lic`) or in the
 user's CData folder (`~/.CData/cdata.jdbc.<source>.lic`, i.e.
