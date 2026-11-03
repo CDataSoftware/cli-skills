@@ -37,7 +37,7 @@ The CLI installs as `cdatacli` and is on `PATH` after install:
 cdatacli <group> <subcommand> [options]
 ```
 
-Requires Java 17+. Drivers are discovered from `./` or `./lib/` relative to the CLI executable.
+Requires Java 17+. Drivers are stored in a per-user library directory: `~/AppData/Roaming/CData/lib` (Windows) or `~/.config/CData/lib` (macOS/Linux). Override it with the `CDATACLI_HOME` environment variable, or per command with `-l <dir>`.
 
 > **Shell syntax:** Examples below use bash/zsh syntax. On Windows PowerShell, adapt them:
 > - `mkdir -p <dir>` → `New-Item -ItemType Directory -Force <dir>`
@@ -178,11 +178,11 @@ If the driver is missing, download it from the CData driver catalog:
 
 ```bash
 cdatacli drivers search --driver <source>          # find the artifactId
-cdatacli drivers download --artifact-id <id>       # downloads to ./lib by default
+cdatacli drivers download --artifact-id <id>       # downloads to the driver library dir
 cdatacli drivers download --url <jar-url>          # alternative: direct URL
 ```
 
-`drivers download` resolves the URL from CData's published `artifacts.json` catalog and writes the jar to `--output <dir>` (default `./lib/`) — the same location the CLI auto-discovers. Re-run `drivers list` to confirm discovery. As a manual fallback, place a CData JDBC JAR in `./` or `./lib/` next to the CLI executable.
+`drivers download` resolves the URL from CData's published `artifacts.json` catalog and writes the jar to `--output <dir>` (default: the driver library directory) — the same location the CLI auto-discovers. Re-run `drivers list` to confirm discovery. As a manual fallback, place a CData JDBC JAR in the driver library directory (or point `-l` at its folder). Drivers are shared across projects — download and activate once.
 
 #### Activate
 

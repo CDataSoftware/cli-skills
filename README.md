@@ -16,7 +16,7 @@ The Skills follow the [vercel-labs/skills](https://github.com/vercel-labs/skills
 
 ## Prerequisites
 
-The `cdata-cli` skill drives the `cdatacli` executable — a Java CLI (requires Java 17+) for CData JDBC drivers. After installing the CLI, `cdatacli` is on `PATH` and discovers drivers from `./` or `./lib/` relative to the executable.
+The `cdata-cli` skill drives the `cdatacli` executable — a Java CLI (requires Java 17+) for CData JDBC drivers. After installing the CLI, `cdatacli` is on `PATH` and stores drivers in a per-user library directory: `~/AppData/Roaming/CData/lib` (Windows) or `~/.config/CData/lib` (macOS/Linux). Override it with the `CDATACLI_HOME` environment variable, or per command with `-l <dir>`.
 
 - Windows (PowerShell): `irm https://downloads.cdata.com/cdatabuilds/builds/free/cdatacli/install-cdatacli-windows.ps1 | iex`
 - macOS: `curl -fsSL https://downloads.cdata.com/cdatabuilds/builds/free/cdatacli/install-cdatacli-macos.sh | bash`
