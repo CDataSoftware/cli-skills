@@ -41,7 +41,8 @@ runs on JDBC, this is the smoothest handoff of all the build skills — two thin
 **already done** for you:
 
 - **The jar is already downloaded** — `cdatacli drivers download` placed
-  `cdata.jdbc.<source>.jar` in `./lib/` (or you know the installed-product path).
+  `cdata.jdbc.<source>.jar` in the CLI's driver library directory — get the exact
+  location from the `path` field of `cdatacli drivers list` (or you know the installed-product path).
 - **The jar is likely already licensed** — if discovery ran `cdatacli drivers activate`,
   `drivers list` shows `"activated": true` and the same jar is ready for the app.
 
@@ -58,8 +59,11 @@ Prefer the jar you already have from discovery; otherwise pick one of the altern
 **A. Reuse the CLI jar (simplest).** It's the exact driver, already local:
 
 ```
-./lib/cdata.jdbc.<source>.jar        # where cdatacli drivers download put it
+~/AppData/Roaming/CData/lib/cdata.jdbc.<source>.jar   # Windows default
+~/.config/CData/lib/cdata.jdbc.<source>.jar           # macOS/Linux default
 ```
+
+If `CDATACLI_HOME` or `-l <dir>` was used, the jar is there instead — `cdatacli drivers list` shows the actual `path`.
 
 **B. Installed-product path** (if the JDBC driver product is installed):
 
